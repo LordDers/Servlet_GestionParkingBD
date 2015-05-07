@@ -141,16 +141,29 @@ public class ParkingBD extends HttpServlet {
 				sql="SELECT * FROM coches WHERE matricula=\""+referencia+"\"";
 				
 				ResultSet buscar = sentencia.executeQuery(sql);
+				int cont = 0;
+				String matricula = null;
+				String marca = null;
+				Boolean motor = false;
+				Boolean automatico = false;
+				Integer n_ruedas = 0;
+				Integer consumo = 0;
 				while (buscar.next()) {
-					String matricula = buscar.getString("matricula");
-					String marca = buscar.getString("marca");
-					Boolean motor = buscar.getBoolean("motor");
-					Boolean automatico = buscar.getBoolean("automatico");
-					Integer n_ruedas = buscar.getInt("n_ruedas");
-					Integer consumo = buscar.getInt("consumo");
+					matricula = buscar.getString("matricula");
+					marca = buscar.getString("marca");
+					motor = buscar.getBoolean("motor");
+					automatico = buscar.getBoolean("automatico");
+					n_ruedas = buscar.getInt("n_ruedas");
+					consumo = buscar.getInt("consumo");
 					System.out.println("Matrícula: "+matricula);
 					System.out.println("Marca: "+marca);
+					//response(response,matricula,marca,motor,automatico,n_ruedas,consumo);
+					cont++;
+				}
+				if (cont > 0) {
 					response(response,matricula,marca,motor,automatico,n_ruedas,consumo);
+				} else {
+					response(response, "No se encontró el vehículo");
 				}
 				con.close();    
 			
@@ -366,6 +379,10 @@ public class ParkingBD extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
+		out.println("<head>");
+			out.println("<title> Vehículos </title>");
+			out.println("<link rel='stylesheet' type='text/css' href='stylebd.css'>");
+		out.println("</head>");
 		out.println("<body>");
 		//out.println("<p>-------------------------------</p>");
 		for (int i=0; i<matricula.length; i++) {	
@@ -373,8 +390,8 @@ public class ParkingBD extends HttpServlet {
 				break;
 			} else {
 				out.println("<p>-------------------------------</p>");
-				out.println("<b> Matrícula: </b>" + matricula[i] + " | ");
-				out.print("<b> Marca: </b>" + marca[i] + "");
+				out.println("<p> <b>Matrícula:</b> " + matricula[i] + " | ");
+				out.print(" <b>Marca:</b> " + marca[i] + "</p>");
 				out.println("<p>-------------------------------</p>");
 			}
 		}
@@ -388,6 +405,10 @@ public class ParkingBD extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
+		out.println("<head>");
+			out.println("<title> Respuesta </title>");
+			out.println("<link rel='stylesheet' type='text/css' href='stylebd.css'>");
+		out.println("</head>");
 		out.println("<body>");				
 		out.println("<p>" + msg + "</p>");
 		out.println("<a href='index.html'> <button> Volver </button> </a>");
@@ -395,19 +416,23 @@ public class ParkingBD extends HttpServlet {
 		out.println("</html>");
 	}
 
-	// Buscar
+	// Buscar y Añadir
 	private void response(HttpServletResponse response, String matricula, String marca,Boolean motor,Boolean automatico,Integer n_ruedas,Integer consumo) throws IOException {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
+		out.println("<head>");
+			out.println("<title>  </title>");
+			out.println("<link rel='stylesheet' type='text/css' href='stylebd.css'>");
+		out.println("</head>");
 		out.println("<body>");
 		out.println("<table align=\"center\" border=5><tr>");
-			out.println("<td>Matrícula</td>");
-			out.println("<td>Marca</td>");
-			out.println("<td>Motor</td>");
-			out.println("<td>Automático</td>");
-			out.println("<td>Número de ruedas</td>");
-			out.println("<td>Consumo</td>");
+			out.println("<th>Matrícula</th>");
+			out.println("<th>Marca</th>");
+			out.println("<th>Motor</th>");
+			out.println("<th>Automático</th>");
+			out.println("<th>Número de ruedas</th>");
+			out.println("<th>Consumo</th>");
 		out.println("</tr><tr>");
 			out.println("<td>" + matricula + "</td>");
 			out.println("<td>" + marca + "</td>");
@@ -437,14 +462,18 @@ public class ParkingBD extends HttpServlet {
 		response.setContentType( "text/html; charset=iso-8859-1" );
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
+		out.println("<head>");
+			out.println("<title> Borrar </title>");
+			out.println("<link rel='stylesheet' type='text/css' href='stylebd.css'>");
+		out.println("</head>");
 		out.println("<body align='center'>");
 		out.println("<p>" + msg + "</p>");
 		out.println("<p>Matrícula: " + matricula + "</p>");
 		out.println("<form name=\"borrar_vehiculo\" method=\"post\" action=\"GestorBD\">");
 			out.println("<input name='gestion' hidden='true' type='text'  value='borrar_vehiculo'/>");
-			out.println("<input name=\"matricula\" hidden=\"true\" type=\"text\"  value="+matricula+"></input>");
+			out.println("<input name=\"matricula\" hidden=\"true\" type=\"text\"  value=" + matricula + "></input>");
 			out.println("<input name=\"confirmacion\" hidden=\"true\" type=\"text\"  value='true'></input>");
-			out.println("<input type='submit' id='submit' value='Borrar'>");
+			out.println("<p> <input type='submit' id='submit' value='Borrar'> </p>");
 		out.println("</form>");
 		out.println("<a href='index.html'> <button> Volver </button> </a>");
 		out.println("</body>");
@@ -485,45 +514,51 @@ public class ParkingBD extends HttpServlet {
 				automatico = buscar.getBoolean("automatico");
 				n_ruedas = buscar.getInt("n_ruedas");
 				consumo = buscar.getInt("consumo");
-				System.out.println("Matrícula: "+matricula);
-				System.out.println("Marca: "+marca);
+				System.out.println("Matrícula: " + matricula);
+				System.out.println("Marca: " + marca);
 			}
 
 			PrintWriter out = response.getWriter();
 			out.println("<html>");
+			out.println("<head>");
+				out.println("<title> Modificar </title>");
+				out.println("<link rel='stylesheet' type='text/css' href='stylebd.css'>");
+			out.println("</head>");
 			out.println("<body>");
-			out.println("<form name='modificar_vehiculo' method='post' action='GestorBD'>");
-				out.println("<input name='gestion' hidden='true' type='text' value='modificar_vehiculo'/>");
-				out.println("<input name='matriculavieja' type='text' value='"+referencia+"' hidden='true'/> <br>");
-				out.println("Matricula a modificar: <input type='text' value='"+referencia+"' disabled/> <br>");
-				out.println("Nueva matrícula: <input name='matriculanueva' type='text' id='matricula' value='matricula (4 numeros 3 letras)'/> <br>");
-				out.println("Marca: <input name='marca' type='text' id='marca' value='"+marca+"' /> <br>");
-				out.println("Número de ruedas: <input name='numruedas' type='text' id='numruedas' value='"+n_ruedas+"' /> <br>");
-				out.println("¿Tiene motor?");
-				String motor_si="";
-				String motor_no="";
-				if (motor) {
-					motor_si="checked";
-				} else {
-					motor_no="checked";
-				}
-				out.println("<input name='motor' type='radio' value='true' "+motor_si+" /> Sí");
-				out.println("<input name='motor' type='radio' value='false' "+motor_no+"/> No <br>");
-				out.println("¿Es automático?");
-				String automatico_si="";
-				String automatico_no="";
-				if (automatico) {
-					automatico_si="checked";
-				} else {
-					automatico_no="checked";
-				}
-				out.println("<input name='automatico' type='radio' value='true' "+automatico_si+" /> Sí");
-				out.println("<input name='automatico' type='radio' value='false' "+automatico_no+"/> No <br>");
-				out.println("Consumo en 100km <input name='consumo' type='text' id='consumo100km' value='"+consumo+"' /> <br>");
-				out.println("<input name=\"confirmacion\" hidden=\"true\" type=\"text\" value='true'></input>");
-				out.println("<input type='submit' id='submit' value='Modificar'>");
-			out.println("</form>");
-			out.println("<a href='index.html'><button>volver</button></a>");
+			out.println("<fieldset>	<legend> Modificar Vehículo " + referencia + "</legend>");
+				out.println("<form name='modificar_vehiculo' method='post' action='GestorBD'>");
+					out.println("<input name='gestion' hidden='true' type='text' value='modificar_vehiculo'/>");
+					out.println("<input name='matriculavieja' type='text' value='" + referencia + "' hidden='true'/> <br>");
+					out.println("<label>Matricula a modificar: </label> <input type='text' value='" + referencia + "' disabled/> <br>");
+					out.println("<label>Nueva matrícula: </label> <input name='matriculanueva' type='text' id='matricula' placeholder='4 numeros 3 letras'/> <br>");
+					out.println("<label>Marca: </label> <input name='marca' type='text' id='marca' value='" + marca + "' /> <br>");
+					out.println("<label>Número de ruedas: </label> <input name='numruedas' type='text' id='numruedas' value='"+n_ruedas+"' /> <br>");
+					out.println("<label>¿Tiene motor? </label>");
+					String motor_si = "";
+					String motor_no = "";
+					if (motor) {
+						motor_si = "checked";
+					} else {
+						motor_no = "checked";
+					}
+					out.println("<input name='motor' type='radio' value='true' " + motor_si + " /> Sí");
+					out.println("<input name='motor' type='radio' value='false' " + motor_no + "/> No <br>");
+					out.println("<label>¿Es automático? </label>");
+					String automatico_si = "";
+					String automatico_no = "";
+					if (automatico) {
+						automatico_si = "checked";
+					} else {
+						automatico_no = "checked";
+					}
+					out.println("<input name='automatico' type='radio' value='true' " + automatico_si + " /> Sí");
+					out.println("<input name='automatico' type='radio' value='false' " + automatico_no + "/> No <br>");
+					out.println("<label>Consumo en 100km </label> <input name='consumo' type='text' id='consumo100km' value='" + consumo + "' /> <br>");
+					out.println("<input name=\"confirmacion\" hidden=\"true\" type=\"text\" value='true'></input>");
+					out.println("<input type='submit' id='submit' value='Modificar'>");
+				out.println("</form>");
+			out.println("</fieldset>");
+			out.println("<br> <a href='index.html'> <button> Volver </button> </a>");
 			out.println("</body>");
 			out.println("</html>");
 
